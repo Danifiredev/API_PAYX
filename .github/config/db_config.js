@@ -6,7 +6,8 @@ const dbConfig = {
   database: 'payx_data',
   options: {
     encrypt: true,
-    trustServerCertificate: true
+    trustServerCertificate: true,
+    connectTimeout: 40000 // 40 segundos
   }
 };
 

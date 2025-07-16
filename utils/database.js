@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const dbConfig = require('C:/Users/danie/OneDrive/Área de Trabalho/Api_Payx/API_PAYX/utils/database.js');
+const dbConfig = require('C:/Users/danie/Desktop/Projetos_API/API_PAYX/.github/config/db_config.js');
 
 class DatabaseHelper {
   static async conectar() {

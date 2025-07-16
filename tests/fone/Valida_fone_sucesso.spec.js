@@ -1,6 +1,7 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const DatabaseHelper = require('../utils/database');
+const DatabaseHelper = require('C:/Users/danie/Desktop/Projetos_API/API_PAYX/utils/database.js'); // Alterado para usar database.js
+test.use({ browserName: 'webkit' }); 
 
 test('Login, criação de dados e consulta no banco - Telefone', async ({ request }) => {
   // 1. Login

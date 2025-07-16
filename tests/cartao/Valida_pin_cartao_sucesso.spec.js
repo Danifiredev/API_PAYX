@@ -1,6 +1,7 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const DatabaseHelper = require('../utils/database'); // Alterado para usar database.js
+const DatabaseHelper = require('C:/Users/danie/Desktop/Projetos_API/API_PAYX/utils/database.js'); // Alterado para usar database.js
+//test.use({ browserName: 'webkit' }); 
 
 test('Fluxo completo: gera token, usa para novo token/identificador e valida', async ({ request }) => {
   // 1. Login

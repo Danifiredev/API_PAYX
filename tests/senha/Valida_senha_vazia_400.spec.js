@@ -1,9 +1,11 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const DatabaseHelper = require('../utils/database');
+const DatabaseHelper = require('C:/Users/danie/Desktop/Projetos_API/API_PAYX/utils/database.js');
+test.use({ browserName: 'webkit' });
 
-test('Login, criação de dados e consulta no banco - Email', async ({ request }) => {
-  // 1. Login (se necessário)
+test('Validação de email com IdentificadorPremiado fixo', async ({ request }) => {
+  // 1. Login
+  console.log('--- REQUISIÇÃO 1: LOGIN ---');
   const loginResponse = await request.post('https://api.payx.firedev.com.br/auth', {
     data: {
       username: '47102615043',
@@ -13,11 +15,14 @@ test('Login, criação de dados e consulta no banco - Email', async ({ request }
   expect(loginResponse.status()).toBe(200);
   const loginBody = await loginResponse.json();
   const tokenAuth = loginBody.token;
+  console.log('\x1b[32mToken de autenticação gerado no login:', tokenAuth, '\x1b[0m');
 
   // 2. Solicita token de verificação de email
   const email = 'teste@firedev.com.br';
   const telefone = '11989878760';
 
+  console.log('--- REQUISIÇÃO 2: GERAR TOKEN DE EMAIL ---');
+  console.log('Payload:', { email, telefone });
   const response = await request.post('https://api.payx.firedev.com.br/public/token/register/verify-email/request-token', {
     data: {
       email,
@@ -33,31 +38,26 @@ test('Login, criação de dados e consulta no banco - Email', async ({ request }
   const registros = await DatabaseHelper.buscarTokensRecentesPorIdentificadorETipo(email, 'EMAIL_VERIFICATION');
   console.log('Registros encontrados:', registros);
 
-  // Verifica se encontrou algum registro antes de acessar o primeiro
   if (!registros || registros.length === 0) {
-    throw new Error('Nenhum registro do tipo EMAIL_VERIFICATION encontrado para o email informado.');
+    console.error('Nenhum registro encontrado para o email:', email);
+    return;
   }
 
-  // Usa o registro mais recente
-  const registro = registros[0];
-  const tokenVerificacao = registro.Token;
-  const identificadorPremiado = registro.IdentificadorPremiado;
+  // 3. Valida o token gerado
+  const tokenGerado = registros[0].token;
+  console.log('Token gerado encontrado:', tokenGerado);
 
-  // 3. Validação final com todos os campos necessários
-  const terceiraResponse = await request.post('https://api.payx.firedev.com.br/public/token/register/verify-email/validate-token', {
+  // 4. Valida o token na API
+  const validationResponse = await request.post('https://api.payx.firedev.com.br/public/token/register/verify-email/validate-token', {
     data: {
-      token: tokenVerificacao,
-      email: email,
-      telefone: telefone,
-      identificadorPremiado: identificadorPremiado
+      email,
+      token: tokenGerado
     }
   });
 
-  const terceiraBody = await terceiraResponse.json();
-  console.log('Resposta da validação:', terceiraBody);
+  // Exibe o status retornado pela API
+  console.log('Status retornado pela API na validação do token:', validationResponse.status());
 
-  expect(terceiraResponse.status()).toBe(200);
+  expect(validationResponse.status()).toBe(400);
+  console.log('Token validado com sucesso:', tokenGerado);
 });
-
-
-

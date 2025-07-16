@@ -1,8 +1,9 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const DatabaseHelper = require('../utils/database');
+const DatabaseHelper = require('C:/Users/danie/Desktop/Projetos_API/API_PAYX/utils/database.js'); // Alterado para usar database.js
+test.use({ browserName: 'webkit' }); 
 
-test('Login, criação de dados e consulta no banco - Email', async ({ request }) => {
+test('Login, criação de dados e consulta no banco - Email com IdentificadorPremiado fixo', async ({ request }) => {
   // 1. Login
   console.log('--- REQUISIÇÃO 1: LOGIN ---');
   const loginResponse = await request.post('https://api.payx.firedev.com.br/auth', {
@@ -37,7 +38,6 @@ test('Login, criação de dados e consulta no banco - Email', async ({ request }
   const registros = await DatabaseHelper.buscarTokensRecentesPorIdentificadorETipo(email, 'EMAIL_VERIFICATION');
   console.log('Registros encontrados:', registros);
 
-  // Verifica se encontrou algum registro antes de acessar o primeiro
   if (!registros || registros.length === 0) {
     throw new Error('Nenhum registro do tipo EMAIL_VERIFICATION encontrado para o email informado.');
   }
@@ -45,26 +45,25 @@ test('Login, criação de dados e consulta no banco - Email', async ({ request }
   // Usa o registro mais recente
   const registro = registros[0];
   const tokenVerificacao = registro.Token;
-  const identificadorPremiado = registro.IdentificadorPremiado;
 
   console.log('--- ETAPA DE CONSULTA NO BANCO ---');
   console.log('Token de verificação encontrado:', tokenVerificacao);
-  console.log('IdentificadorPremiado encontrado:', identificadorPremiado);
+  console.log('IdentificadorPremiado fixo utilizado:', email);
 
-  // 3. Validação final com todos os campos necessários
+  // 3. Validação final com IdentificadorPremiado fixo (email)
   console.log('--- REQUISIÇÃO 3: VALIDAÇÃO FINAL ---');
   console.log('Payload:', {
     token: tokenVerificacao,
     email: email,
     telefone: telefone,
-    identificadorPremiado: identificadorPremiado
+    identificadorPremiado: 'teste@firedev.com.br'
   });
   const terceiraResponse = await request.post('https://api.payx.firedev.com.br/public/token/register/verify-email/validate-token', {
     data: {
       token: tokenVerificacao,
       email: email,
       telefone: telefone,
-      identificadorPremiado: identificadorPremiado
+      identificadorPremiado: 'teste@firedev.com.br' // Fixo
     }
   });
 
@@ -74,14 +73,15 @@ test('Login, criação de dados e consulta no banco - Email', async ({ request }
   console.log('\n===== RESUMO DO FLUXO =====');
   console.log('\x1b[32mToken de autenticação gerado no login:', tokenAuth, '\x1b[0m');
   console.log('Token de verificação encontrado:', tokenVerificacao);
-  console.log('IdentificadorPremiado encontrado:', identificadorPremiado);
+  console.log('IdentificadorPremiado fixo utilizado:', email);
   console.log('Payload da validação final:', {
     token: tokenVerificacao,
     email: email,
     telefone: telefone,
-    identificadorPremiado: identificadorPremiado
+    identificadorPremiado: 'teste@firedev.com.br'
   });
   console.log('Resposta da validação:', terceiraBody);
 
   expect(terceiraResponse.status()).toBe(200);
+     expect(response.status()).toBe(200);
 });

@@ -3,8 +3,25 @@
     "aws-sdk": "^2.1692.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.53.2",
+    "@playwright/test": "^1.54.1",
     "@types/node": "^24.0.10"
   },
-  "scripts": {}
+  "scripts": {},
+  "name": "api_payx",
+  "version": "1.0.0",
+  "description": "teste",
+  "main": "playwright.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Danifiredev/API_PAYX.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Danifiredev/API_PAYX/issues"
+  },
+  "homepage": "https://github.com/Danifiredev/API_PAYX#readme"
 }
